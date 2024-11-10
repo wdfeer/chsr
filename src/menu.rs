@@ -16,7 +16,7 @@ pub fn loop_main_menu() {
     }
 }
 
-fn match_input(input: &str) -> (fn() -> bool) {
+fn match_input(input: &str) -> fn() -> bool {
     match input.to_lowercase().chars().next().unwrap() {
         'p' => play,
         'q' => quit,
