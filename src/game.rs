@@ -1,6 +1,6 @@
 use std::io::{stdin};
 
-type Board = Vec<u8>;
+type Board = Vec<i8>;
 
 pub fn loop_game() {
     let mut board= get_default_board();
@@ -14,30 +14,28 @@ pub fn loop_game() {
     }
 }
 
-const EMPTY_PIECE: u8 = 0;
-const KING: u8 = 1;
+const EMPTY_PIECE: i8 = 0;
+const KING: i8 = 1;
 fn get_default_board() -> Board {
-    let king_positions: Vec<usize> = vec![3, 64 - 4];
-
     let mut board: Board = vec![EMPTY_PIECE; 64];
-    for p in king_positions {
-        board[p] = KING;
-    }
+    board[3] = KING;
+    board[60] = -KING;
 
     board
 }
 
 fn print_king_positions(board: Board) {
     println!("The kings are at [{}]",
-             get_kings(board)
+             get_pieces(board, KING, true)
                  .iter()
                  .map(|x| format!("{} ", x.to_string()))
                  .collect::<String>());
 }
-fn get_kings(board: Board) -> Vec<usize> {
+
+fn get_pieces(board: Board, piece: i8, ignore_team: bool) -> Vec<usize> {
     let mut positions = vec![];
     for i in 0..board.len() {
-        if board[i] == KING {
+        if board[i] == piece || (ignore_team && board[i].abs() == piece.abs()) {
             positions.push(i)
         }
     };
@@ -52,7 +50,7 @@ fn process_player(player: u8, mut board: &mut Board) {
     let mov = read_valid_move(player.clone(), board.clone());
     make_move(&mut board, mov);
     
-    if get_kings(board.clone()).len() <= 1 {
+    if get_pieces(board.clone(), KING, true).len() <= 1 {
         println!("Player {} wins!!!", player);
         std::process::exit(0);
     }
@@ -70,13 +68,19 @@ fn read_valid_move(player: u8, board: Board) -> Vec<usize> {
 }
 
 fn is_valid_move(player: u8, board: Board, positions: Vec<usize>) -> bool {
-    if positions.iter().any(|x| *x > 63) { return false }
+    // out of bounds check
+    if positions.iter().any(|x| *x >= board.len()) { return false }
 
-    if board[positions[0]] == 0 { return false }
+    let attacker = board[positions[0]];
+    if attacker == EMPTY_PIECE { return false } // don't move empty space
+    if (attacker >= 0) == (player == 2) { return false } // can't move enemy pieces
 
+    let defender = board[positions[1]];
+    if (defender != EMPTY_PIECE) && ((attacker < 0) == (defender < 0)) { return false } // no friendly fire
+
+    // check king movement
     let diff = positions[1] as i32 - positions[0] as i32;
     let adjacent = vec![1, 7, 8, 9].contains(&diff.abs());
-
     adjacent
 }
 
