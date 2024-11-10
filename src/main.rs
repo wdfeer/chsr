@@ -1,5 +1,6 @@
-mod ui;
+mod menu;
 
 fn main() {
-    ui::start_game()
+    menu::loop_main_menu();
+    println!("TODO: Gameplay");
 }
