@@ -1,6 +1,7 @@
 mod menu;
+mod game;
 
 fn main() {
     menu::loop_main_menu();
-    println!("TODO: Gameplay");
+    game::loop_game();
 }
