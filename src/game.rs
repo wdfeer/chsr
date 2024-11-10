@@ -48,12 +48,29 @@ fn process_player(player: u8, mut board: &mut Board) {
     println!();
     print_king_positions(board.clone());
     println!("Player {}: make your move in the format 'x1 x2'", player);
-    make_move(&mut board, read_move());
+
+    let mov = read_valid_move(player.clone(), board.clone());
+    make_move(&mut board, mov);
     
     if get_kings(board.clone()).len() <= 1 {
         println!("Player {} wins!!!", player);
         std::process::exit(0);
     }
+}
+
+fn read_valid_move(player: u8, board: Board) -> Vec<usize> {
+    loop {
+        let mov = read_move();
+        if is_valid_move(player, board.clone(), mov.clone()) {
+            return mov
+        } else {
+            println!("Invalid move! Try again:")
+        }
+    };
+}
+
+fn is_valid_move(player: u8, board: Board, mov: Vec<usize>) -> bool {
+    board[mov[0]] != 0
 }
 
 fn read_move() -> Vec<usize> {
