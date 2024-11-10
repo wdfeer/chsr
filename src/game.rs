@@ -70,12 +70,14 @@ fn read_valid_move(player: u8, board: Board) -> Vec<usize> {
 }
 
 fn is_valid_move(player: u8, board: Board, positions: Vec<usize>) -> bool {
-    let nonempty = board[positions[0]] != 0;
-    
+    if positions.iter().any(|x| *x > 63) { return false }
+
+    if board[positions[0]] == 0 { return false }
+
     let diff = positions[1] as i32 - positions[0] as i32;
     let adjacent = vec![1, 7, 8, 9].contains(&diff.abs());
 
-    nonempty && adjacent
+    adjacent
 }
 
 fn read_move() -> Vec<usize> {
