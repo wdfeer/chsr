@@ -1,5 +1,7 @@
 use std::io::{stdin};
 
+type Board = Vec<u8>;
+
 pub fn loop_game() {
     let mut board= get_default_board();
 
@@ -14,10 +16,10 @@ pub fn loop_game() {
 
 const EMPTY_PIECE: u8 = 0;
 const KING: u8 = 1;
-fn get_default_board() -> Vec<u8> {
+fn get_default_board() -> Board {
     let king_positions: Vec<usize> = vec![3, 64 - 4];
 
-    let mut board: Vec<u8> = vec![EMPTY_PIECE; 64];
+    let mut board: Board = vec![EMPTY_PIECE; 64];
     for p in king_positions {
         board[p] = KING;
     }
@@ -25,14 +27,14 @@ fn get_default_board() -> Vec<u8> {
     board
 }
 
-fn print_king_positions(board: Vec<u8>) {
+fn print_king_positions(board: Board) {
     println!("The kings are at [{}]",
              get_kings(board)
                  .iter()
                  .map(|x| format!("{} ", x.to_string()))
                  .collect::<String>());
 }
-fn get_kings(board: Vec<u8>) -> Vec<usize> {
+fn get_kings(board: Board) -> Vec<usize> {
     let mut positions = vec![];
     for i in 0..board.len() {
         if board[i] == KING {
@@ -42,7 +44,7 @@ fn get_kings(board: Vec<u8>) -> Vec<usize> {
     positions
 }
 
-fn process_player(player: u8, mut board: &mut Vec<u8>) {
+fn process_player(player: u8, mut board: &mut Board) {
     println!();
     print_king_positions(board.clone());
     println!("Player {}: make your move in the format 'x1 x2'", player);
@@ -64,7 +66,7 @@ fn read_move() -> Vec<usize> {
         .collect::<Vec<usize>>()
 }
 
-fn make_move(board: &mut Vec<u8>, positions: Vec<usize>) {
+fn make_move(board: &mut Board, positions: Vec<usize>) {
     board[positions[1]] = board[positions[0]];
     board[positions[0]] = EMPTY_PIECE;
 }
