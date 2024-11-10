@@ -1,28 +1,21 @@
-use std::io::{stdin, stdout, Write};
-use termion::event::Key;
-use termion::input::TermRead;
-use termion::raw::IntoRawMode;
+use std::io::stdin;
 
 const WELCOME: &str = "Welcome to chsr!\n[P]lay\n[Q]uit\n";
 
 pub fn start_game() {
-    let stdin = stdin();
-    let mut stdout = stdout().into_raw_mode().unwrap();
+    println!("{}", WELCOME);
 
-    write!(stdout, "{}{}", termion::clear::All, WELCOME).expect("Printing to stdout failed!");
-    stdout.flush().unwrap();
+    let mut input = String::new();
+    stdin().read_line(&mut input).expect("Failed to read stdin!");
 
-    for key in stdin.keys() {
-        match_key(key.unwrap());
-        stdout.flush().unwrap();
-    }
+    match_input(input.as_str())();
 }
 
-fn match_key(key: Key) {
-    match key {
-        Key::Char('p') => play(),
-        Key::Char('q') => quit(),
-        _ => ()
+fn match_input(input: &str) -> fn() {
+    match input.to_lowercase().chars().next().unwrap() {
+        'p' => play,
+        'q' => quit,
+        _ => on_invalid_input
     }
 }
 
@@ -32,4 +25,9 @@ fn play() {
 
 fn quit() {
     println!("TODO: quit the game");
+}
+
+fn on_invalid_input() {
+    println!("Invalid input! Quitting the game...");
+    quit()
 }
