@@ -58,40 +58,45 @@ fn process_player(player: u8, mut board: &mut Board) {
 
 fn read_valid_move(player: u8, board: Board) -> Vec<usize> {
     loop {
-        let mov = read_move();
-        if is_valid_move(player, board.clone(), mov.clone()) {
-            return mov
-        } else {
-            println!("Invalid move! Try again:")
+        let mov = get_valid_move(player, board.clone(), read_move());
+        match mov {
+            Ok(m) => {
+                return m;
+            }
+            Err(e) => {
+                println!("Invalid move: {}! Try again.", e);
+            }
         }
     };
 }
 
-fn is_valid_move(player: u8, board: Board, positions: Vec<usize>) -> bool {
+fn get_valid_move(player: u8, board: Board, inputs: Vec<String>) -> Result<Vec<usize>, &'static str> {
+    let numbers = inputs.iter().map(|x| str::parse::<i16>(x).unwrap()).collect::<Vec<i16>>();
+
     // out of bounds check
-    if positions.iter().any(|x| *x >= board.len()) { return false }
+    if numbers.iter().any(|x| *x < 0 || *x >= board.len() as i16) { return Err("position out of bounds") }
+
+    let positions = numbers.iter().map(|x| *x as usize).collect::<Vec<usize>>();
 
     let attacker = board[positions[0]];
-    if attacker == EMPTY_PIECE { return false } // don't move empty space
-    if (attacker >= 0) == (player == 2) { return false } // can't move enemy pieces
+    if attacker == EMPTY_PIECE { return Err("cannot move empty space") }
+    if (attacker >= 0) == (player == 2) { return Err("cannot move enemy pieces") }
 
     let defender = board[positions[1]];
-    if (defender != EMPTY_PIECE) && ((attacker < 0) == (defender < 0)) { return false } // no friendly fire
+    if (defender != EMPTY_PIECE) && ((attacker < 0) == (defender < 0)) { return Err("cannot capture own pieces") }
 
-    // check king movement
     let diff = positions[1] as i32 - positions[0] as i32;
     let adjacent = vec![1, 7, 8, 9].contains(&diff.abs());
-    adjacent
+    if !adjacent { return Err("king doesn't move like that") }
+
+    Ok(positions)
 }
 
-fn read_move() -> Vec<usize> {
+fn read_move() -> Vec<String> {
     let mut input = String::new();
     stdin().read_line(&mut input).expect("Failed to read stdin!");
 
-    input.split(" ")
-        .map(|x|
-            str::parse::<usize>(x.trim()).expect("Failed to parse user input!"))
-        .collect::<Vec<usize>>()
+    input.split(" ").map(|x|x.trim().to_string()).collect::<Vec<String>>()
 }
 
 fn make_move(board: &mut Board, positions: Vec<usize>) {
