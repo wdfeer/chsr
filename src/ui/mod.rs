@@ -24,10 +24,11 @@ fn play() {
 }
 
 fn quit() {
-    println!("TODO: quit the game");
+    println!("Bye!");
+    std::process::exit(0);
 }
 
 fn on_invalid_input() {
     println!("Invalid input! Quitting the game...");
-    quit()
+    std::process::exit(1);
 }
