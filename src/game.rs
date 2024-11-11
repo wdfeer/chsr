@@ -16,10 +16,15 @@ pub fn loop_game() {
 
 const EMPTY_PIECE: i8 = 0;
 const KING: i8 = 1;
+const ROOK: i8 = 2;
 fn get_default_board() -> Board {
     let mut board: Board = vec![EMPTY_PIECE; 64];
+    board[0] = ROOK;
     board[3] = KING;
+    board[7] = ROOK;
+    board[55] = -ROOK;
     board[60] = -KING;
+    board[63] = -ROOK;
 
     board
 }
@@ -85,11 +90,20 @@ fn get_valid_move(player: u8, board: Board, inputs: Vec<String>) -> Result<Vec<u
     let defender = board[positions[1]];
     if (defender != EMPTY_PIECE) && ((attacker < 0) == (defender < 0)) { return Err("cannot capture own pieces") }
 
-    let diff = positions[1] as i32 - positions[0] as i32;
-    let adjacent = vec![1, 7, 8, 9].contains(&diff.abs());
-    if !adjacent { return Err("king doesn't move like that") }
+    if can_piece_move(attacker.abs(), positions[0], positions[1]){
+        Ok(positions)
+    } else {
+        Err("this piece cannot move like that")
+    }
+}
 
-    Ok(positions)
+fn can_piece_move(piece: i8, from: usize, to: usize) -> bool {
+    let diff = to as i32 - from as i32;
+    match piece {
+        KING => vec![1, 7, 8, 9].contains(&diff.abs()),
+        ROOK => diff % 8 == 0 || (to / 8) == (from / 8),
+        _ => panic!("Piece {} is invalid!", piece)
+    }
 }
 
 fn read_move() -> Vec<String> {
