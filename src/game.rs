@@ -29,9 +29,9 @@ fn get_default_board() -> Board {
     board
 }
 
-fn print_king_positions(board: Board) {
-    println!("The kings are at [{}]",
-             get_pieces(board, KING, true)
+fn print_piece_positions(message: &str, piece: i8, board: Board) {
+    println!("{message} {}",
+             get_pieces(board, piece, true)
                  .iter()
                  .map(|x| format!("{} ", x.to_string()))
                  .collect::<String>());
@@ -49,7 +49,8 @@ fn get_pieces(board: Board, piece: i8, ignore_team: bool) -> Vec<usize> {
 
 fn process_player(player: u8, mut board: &mut Board) {
     println!();
-    print_king_positions(board.clone());
+    print_piece_positions("The kings are at", KING, board.clone());
+    print_piece_positions("The rooks are at", ROOK, board.clone());
     println!("Player {}: make your move in the format 'x1 x2'", player);
 
     let mov = read_valid_move(player.clone(), board.clone());
