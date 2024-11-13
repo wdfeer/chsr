@@ -127,7 +127,7 @@ fn multicast(board: Board, origin: usize, vec_next_pos: Vec<fn(usize) -> usize>,
 /// Calls 'next_pos' recursively until 'target' is reached.
 /// False if the position goes out of bounds or hits another piece.
 fn raycast(board: Board, origin: usize, next_pos: fn(usize) -> usize, target: usize) -> bool {
-    fn is_within_bounds(p: usize) -> bool { p >= 0 && p < BOARD_SIZE}
+    fn is_within_bounds(p: usize) -> bool { p < BOARD_SIZE}
     fn can_move_through(board: &Board, p: usize) -> bool { board[p] == EMPTY_PIECE }
 
     let mut last_pos: usize = origin;
