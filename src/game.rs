@@ -1,5 +1,6 @@
 use std::io::{stdin};
 
+const BOARD_SIZE: usize = 64;
 type Board = Vec<i8>;
 
 pub fn loop_game() {
@@ -22,9 +23,9 @@ fn get_default_board() -> Board {
     board[0] = ROOK;
     board[3] = KING;
     board[7] = ROOK;
-    board[55] = -ROOK;
-    board[60] = -KING;
-    board[63] = -ROOK;
+    board[BOARD_SIZE - 8] = -ROOK;
+    board[BOARD_SIZE - 5] = -KING;
+    board[BOARD_SIZE - 1] = -ROOK;
 
     board
 }
@@ -39,7 +40,7 @@ fn print_piece_positions(message: &str, piece: i8, board: Board) {
 
 fn get_pieces(board: Board, piece: i8, ignore_team: bool) -> Vec<usize> {
     let mut positions = vec![];
-    for i in 0..board.len() {
+    for i in 0..BOARD_SIZE {
         if board[i] == piece || (ignore_team && board[i].abs() == piece.abs()) {
             positions.push(i)
         }
@@ -105,6 +106,10 @@ fn can_piece_move(piece: i8, from: usize, to: usize) -> bool {
         ROOK => diff % 8 == 0 || (to / 8) == (from / 8),
         _ => panic!("Piece {} is invalid!", piece)
     }
+}
+
+fn raycast(board: Board, origin: usize, next_pos: fn(usize) -> usize) -> Result<Vec<usize>, None> {
+    // TODO: Implement checking 'next_pos' squares of the board until hitting a piece or board ending
 }
 
 fn read_move() -> Vec<String> {
