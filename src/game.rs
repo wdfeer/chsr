@@ -120,7 +120,12 @@ fn can_piece_move(board: Board, piece: i8, from: usize, to: usize) -> bool {
                 |x| if x % 8 < 7 { x + 1 } else { x }, // get next square in the rank
                 |x| if x % 8 > 0 { x - 1 } else { x } // get previous square in the rank
             ], to)),
-        BISHOP => panic!("TODO: implement bishop movement"),
+        BISHOP => diff.abs() % 8 == 1 && multicast(board.clone(), from, vec![
+                |x| if x % 8 < 7 {x + 9} else { x } // get next square in next rank
+                |x| if x / 8 > 0 && x % 8 < 7 {x - 7} else { x } // get next square in previous rank
+                |x| if x % 8 > 0 {x + 7} else { x } // get previous square in next rank
+                |x| if x / 8 > 0 && x % 8 > 0 {x - 9} else { x } // get previous square in previous rank
+            ], to),
         _ => panic!("Piece {} is invalid!", piece)
     }
 }
