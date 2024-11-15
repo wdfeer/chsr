@@ -18,13 +18,18 @@ pub fn loop_game() {
 const EMPTY_PIECE: i8 = 0;
 const KING: i8 = 1;
 const ROOK: i8 = 2;
+const BISHOP: i8 = 3;
 fn get_default_board() -> Board {
     let mut board: Board = vec![EMPTY_PIECE; 64];
     board[0] = ROOK;
+    board[2] = BISHOP;
     board[3] = KING;
+    board[5] = BISHOP;
     board[7] = ROOK;
     board[BOARD_SIZE - 8] = -ROOK;
+    board[BOARD_SIZE - 6] = -BISHOP;
     board[BOARD_SIZE - 5] = -KING;
+    board[BOARD_SIZE - 3] = -BISHOP;
     board[BOARD_SIZE - 1] = -ROOK;
 
     board
@@ -52,6 +57,7 @@ fn process_player(player: u8, mut board: &mut Board) {
     println!();
     print_piece_positions("The kings are at", KING, board.clone());
     print_piece_positions("The rooks are at", ROOK, board.clone());
+    print_piece_positions("The bishops are at", BISHOP, board.clone());
     println!("Player {}: make your move in the format 'x1 x2'", player);
 
     let mov = read_valid_move(player.clone(), board.clone());
@@ -114,6 +120,7 @@ fn can_piece_move(board: Board, piece: i8, from: usize, to: usize) -> bool {
                 |x| if x % 8 < 7 { x + 1 } else { x }, // get next square in the rank
                 |x| if x % 8 > 0 { x - 1 } else { x } // get previous square in the rank
             ], to)),
+        BISHOP => panic!("TODO: implement bishop movement"),
         _ => panic!("Piece {} is invalid!", piece)
     }
 }
