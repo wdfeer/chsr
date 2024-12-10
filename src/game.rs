@@ -35,11 +35,20 @@ fn get_default_board() -> Board {
     board
 }
 
+fn position_to_pair(pos: usize) -> (u8, u8) {
+    ((pos % 8).try_into().unwrap(), (pos / 8).try_into().unwrap())
+}
+
 fn print_piece_positions(message: &str, piece: i8, board: Board) {
+    fn pos_to_str(pos: usize) -> String {
+        let (x, y) = position_to_pair(pos);
+        format!("{x}|{y}")
+    }
+
     println!("{message} {}",
              get_pieces(board, piece, true)
                  .iter()
-                 .map(|x| format!("{} ", x.to_string()))
+                 .map(|x| format!("{} ", pos_to_str(*x)))
                  .collect::<String>());
 }
 
