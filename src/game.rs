@@ -1,6 +1,7 @@
 use std::io::{stdin};
 
-const BOARD_SIZE: usize = 64;
+const BOARD_WIDTH: u8 = 8;
+const BOARD_SIZE: usize = (BOARD_WIDTH * BOARD_WIDTH) as usize;
 type Board = Vec<i8>;
 
 pub fn loop_game() {
@@ -39,12 +40,16 @@ fn position_to_pair(pos: usize) -> (u8, u8) {
     ((pos % 8).try_into().unwrap(), (pos / 8).try_into().unwrap())
 }
 
-fn print_piece_positions(message: &str, piece: i8, board: Board) {
-    fn pos_to_str(pos: usize) -> String {
-        let (x, y) = position_to_pair(pos);
-        format!("{x}|{y}")
-    }
+fn pair_to_position(x: u8, y: u8) -> usize {
+    x as usize + y as usize * 8
+}
 
+fn pos_to_str(pos: usize) -> String {
+    let (x, y) = position_to_pair(pos);
+    format!("{x}|{y}")
+}
+
+fn print_piece_positions(message: &str, piece: i8, board: Board) {
     println!("{message} {}",
              get_pieces(board, piece, true)
                  .iter()
@@ -67,7 +72,7 @@ fn process_player(player: u8, mut board: &mut Board) {
     print_piece_positions("The kings are at", KING, board.clone());
     print_piece_positions("The rooks are at", ROOK, board.clone());
     print_piece_positions("The bishops are at", BISHOP, board.clone());
-    println!("Player {}: make your move in the format 'x1 x2'", player);
+    println!("Player {}: make your move in the format 'x1 y1 x2 y2'", player);
 
     let mov = read_valid_move(player.clone(), board.clone());
     make_move(&mut board, mov);
@@ -96,9 +101,10 @@ fn get_valid_move(player: u8, board: Board, inputs: Vec<String>) -> Result<Vec<u
     let numbers = inputs.iter().map(|x| str::parse::<i16>(x).unwrap()).collect::<Vec<i16>>();
 
     // out of bounds check
-    if numbers.iter().any(|x| *x < 0 || *x >= BOARD_SIZE as i16) { return Err("position out of bounds"); }
+    if numbers.iter().any(|x| *x < 0 || *x >= BOARD_WIDTH as i16) { return Err("position out of bounds"); }
 
-    let positions = numbers.iter().map(|x| *x as usize).collect::<Vec<usize>>();
+    let coordinates = numbers.iter().map(|x| *x as u8).collect::<Vec<u8>>();
+    let positions = vec![pair_to_position(coordinates[0], coordinates[1]), pair_to_position(coordinates[2], coordinates[3])];
 
     let attacker = board[positions[0]];
     if attacker == EMPTY_PIECE { return Err("cannot move empty space"); }
