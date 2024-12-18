@@ -154,6 +154,8 @@ fn can_piece_move(board: Board, piece: i8, from: usize, to: usize) -> bool {
                 |x| if x / 8 > 0 && x % 8 > 0 {x - 9} else { x } // get previous square in previous rank
             ], to)),
         KNIGHT => vec![6, 10, 15, 17].contains(&diff.abs()),
+        QUEEN => can_piece_move(board.clone(), ROOK, from, to) ||
+                can_piece_move(board.clone(), BISHOP, from, to),
         _ => panic!("Piece {} is invalid!", piece)
     }
 }
