@@ -149,6 +149,7 @@ fn can_piece_move(board: Board, piece: i8, from: usize, to: usize) -> bool {
                 |x| if x % 8 < 7 {x + 9} else { x } // get next square in next rank
                 |x| if x / 8 > 0 && x % 8 > 0 {x - 9} else { x } // get previous square in previous rank
             ], to)),
+        KNIGHT => vec![6, 10, 15, 17].contains(&diff.abs()),
         _ => panic!("Piece {} is invalid!", piece)
     }
 }
