@@ -21,12 +21,14 @@ const KING: i8 = 1;
 const ROOK: i8 = 2;
 const BISHOP: i8 = 3;
 const KNIGHT: i8 = 4;
+const QUEEN: i8 = 5;
 fn get_default_board() -> Board {
     let mut board: Board = vec![EMPTY_PIECE; 64];
     board[0] = ROOK;
     board[1] = KNIGHT;
     board[2] = BISHOP;
-    board[3] = KING;
+    board[3] = QUEEN;
+    board[4] = KING;
     board[5] = BISHOP;
     board[6] = KNIGHT;
     board[7] = ROOK;
@@ -34,6 +36,7 @@ fn get_default_board() -> Board {
     board[BOARD_SIZE - 7] = -KNIGHT;
     board[BOARD_SIZE - 6] = -BISHOP;
     board[BOARD_SIZE - 5] = -KING;
+    board[BOARD_SIZE - 4] = -QUEEN;
     board[BOARD_SIZE - 3] = -BISHOP;
     board[BOARD_SIZE - 2] = -KNIGHT;
     board[BOARD_SIZE - 1] = -ROOK;
@@ -78,6 +81,7 @@ fn process_player(player: u8, mut board: &mut Board) {
     print_piece_positions("The knights are at", KNIGHT, board.clone());
     print_piece_positions("The bishops are at", BISHOP, board.clone());
     print_piece_positions("The rooks are at", ROOK, board.clone());
+    print_piece_positions("The queens are at", QUEEN, board.clone());
     println!("Player {}: make your move in the format 'x1 y1 x2 y2'", player);
 
     let mov = read_valid_move(player.clone(), board.clone());
